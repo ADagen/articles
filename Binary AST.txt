@@ -6,7 +6,7 @@
 
 Чем это предложение может быть полезно для нас?
 
-<тут можно рассказать о проблеме что flowtype, eslint, jest и так далее все парсят сами>
+<тут можно рассказать о проблеме, что flowtype, eslint, jest и так далее все парсят сами>
 
 
 Мотивация
@@ -111,7 +111,9 @@ function h(input) {
 
 2. Early Error Semantics
 
-Для ранних ошибок в JavaScript необходим парсинг всей совокупности файлов. Движки используют для этого ленивый парсинг (также известный как пре-парсинг), во время которого  не строится полное AST: начальная кодогенерация для внутренних функций откладывается до первого вызова. В среднем это ускоряет парсинг на 50%, и затрачиваемое время по-прежнему пропорционально размеру файла. Что ещё хуже, эта оптимизация может выйти боком. Если внутренняя функция, кодогенерация которой была отменена, вызывается во время старта приложения, движок парсит полностью всю функцию. Это случается достаточно часто, т.к. в разработке принято прибегать к использованию самовызывающихся функций, что полностью нивелирует ленивый парсинг.
+* ранние ошибки: http://www.ecma-international.org/ecma-262/5.1/#sec-16
+
+Для ранних ошибок в JavaScript необходим парсинг всей совокупности файлов. Движки используют для этого ленивый парсинг (также известный как пре-парсинг), во время которого не строится полное AST: начальная кодогенерация для внутренних функций откладывается до первого вызова. В среднем это ускоряет парсинг на 50%, но затрачиваемое время по-прежнему пропорционально размеру файла. Что ещё хуже, эта оптимизация может выйти боком. Если внутренняя функция, кодогенерация которой была отменена, вызывается во время старта приложения, движок парсит полностью всю функцию. Это случается достаточно часто, т.к. в разработке принято прибегать к использованию самовызывающихся функций, что полностью нивелирует ленивый парсинг.
 
 JavaScript’s early error semantics requires the entirety of every file be parsed. Engines employ a lazy parsing (also known as pre-parsing) optimization that avoids building a full AST by skipping initial code generation for inner functions until time of first invocation. This is only 50% faster on average, and parsing effort is still proportional to file size. What's worse, this optimization can backfire. If an inner function whose code generation was skipped happens to be called during application startup, then the engine must in effect re-parse the entire function. This happens often enough that developers have resorted to using immediately-invoked function expressions to altogether bypass lazy parsing.
 
@@ -136,7 +138,7 @@ function outer() {
 }
 
 
-3. Недостатки использования символов
+3. Недостатки использования символов (шта?)
 
 3. Inefficiencies in Using Characters
 
@@ -144,7 +146,7 @@ function outer() {
 
 When parsing, there can be ambiguity at the character-level about what type of expression a JavaScript syntax is encoding. For example, to distinguish between list expressions and the parameter list for an arrow function, parsers need to do additional bookkeeping to account for all valid interpretations until the ambiguity is resolved, or they need to have the ability to backtrack while parsing.
 
-С другой стороны, лексическая обработка медленная из-за необходимости поддержки Юникода и экранированных символов. Движкам необходимо проверять, является ли кодировка конкретного текста однобайтовой или двухбайтовой.
+С другой стороны, лексический разбор медленный из-за необходимости поддержки Юникода и экранированных символов. Движкам необходимо проверять, является ли кодировка конкретного текста однобайтовой или двухбайтовой.
 
 Similarly, lexing is slow due to reasons such as Unicode encoding and having to handle Unicode escape codes. Engines need to check if some text is single-byte or double-byte encoded, for instance.
 
@@ -167,9 +169,11 @@ changing Function.prototype.toString behavior
 requiring UTF-8
 To further speed up parsing, we propose to encode static semantics as implementation hints, and verify them as deferred assertions.
 
-Для этого AST формата мы (пока) не предполагаем автоматически <отходить> от ECMA-26 грамматики, хотя она слишком многословна для эффективного преобразования в дерево, ...
+Для этого AST формата мы (пока) не предполагаем автоматическое построение из ECMA-262 грамматики, так как для представления в виде абстрактного дерева она содержит много лишнего, поэтому формат будет требовать множественные линеаризации потока управления (в оригинале просто "flattening") и инлайновые вставки [https://en.wikipedia.org/wiki/Inline_expansion] (в оригинале просто "inlining"). Как следствие, это может усложнить эволюцию JavaScript-спецификации из-за фактического превращения грамматики в спецификацию бинарного формата.
 
 For this AST format, we currently do not propose to automatically derive from the ECMA-262 grammar since it is too verbose to be an efficient tree representation, and as such it would require a lot of flattening and inlining. Additionally, this might restrict the evolution of the JavaScript specification by effectively making the grammar a normative specification of the binary format.
+
+Чтобы этого не произошло, мы предлагаем отдельную грамматику для представления дерева, в которой аннотации в вершинах АСД хранят информацию только о синтаксисе. В настоящий момент есть несколько подобных грамматик, от которых мы можем отталкиваться, например Babylon [https://github.com/babel/babylon] или Shift AST [http://shift-ast.org/].
 
 Instead, we propose a separate tree grammar, with annotations on AST nodes that only express information about the syntax. There are several existing tree grammars which we may take as a starting point, such as Babylon or Shift AST.
 
