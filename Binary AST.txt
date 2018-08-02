@@ -1,21 +1,21 @@
-Обзор предложения для ECMAScript "Бинарный формат AST"
+РћР±Р·РѕСЂ РїСЂРµРґР»РѕР¶РµРЅРёСЏ РґР»СЏ ECMAScript "Р‘РёРЅР°СЂРЅС‹Р№ С„РѕСЂРјР°С‚ AST"
 
-Это вольный перевод текста, описывающего новый бинарный формат абстрактного синтактического дерева. Авторами оригинального документа являются Shu-yu Guo, David Teller, Kannan Vijayan (Mozilla) и Vladan Djeric (Facebook). Русскоязычные термины не всегда подходят для англоязычных, поэтому я либо старался использовать термины из широко известных статей Дмитрия Сошникова (http://dmitrysoshnikov.com), либо вообще не переводить.
+Р­С‚Рѕ РІРѕР»СЊРЅС‹Р№ РїРµСЂРµРІРѕРґ С‚РµРєСЃС‚Р°, РѕРїРёСЃС‹РІР°СЋС‰РµРіРѕ РЅРѕРІС‹Р№ Р±РёРЅР°СЂРЅС‹Р№ С„РѕСЂРјР°С‚ Р°Р±СЃС‚СЂР°РєС‚РЅРѕРіРѕ СЃРёРЅС‚Р°РєС‚РёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР°. РђРІС‚РѕСЂР°РјРё РѕСЂРёРіРёРЅР°Р»СЊРЅРѕРіРѕ РґРѕРєСѓРјРµРЅС‚Р° СЏРІР»СЏСЋС‚СЃСЏ Shu-yu Guo, David Teller, Kannan Vijayan (Mozilla) Рё Vladan Djeric (Facebook). Р СѓСЃСЃРєРѕСЏР·С‹С‡РЅС‹Рµ С‚РµСЂРјРёРЅС‹ РЅРµ РІСЃРµРіРґР° РїРѕРґС…РѕРґСЏС‚ РґР»СЏ Р°РЅРіР»РѕСЏР·С‹С‡РЅС‹С…, РїРѕСЌС‚РѕРјСѓ СЏ Р»РёР±Рѕ СЃС‚Р°СЂР°Р»СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РµСЂРјРёРЅС‹ РёР· С€РёСЂРѕРєРѕ РёР·РІРµСЃС‚РЅС‹С… СЃС‚Р°С‚РµР№ Р”РјРёС‚СЂРёСЏ РЎРѕС€РЅРёРєРѕРІР° (http://dmitrysoshnikov.com), Р»РёР±Рѕ РІРѕРѕР±С‰Рµ РЅРµ РїРµСЂРµРІРѕРґРёС‚СЊ.
 
-На последней 59-й встрече рабочей группы Ecma TC39 это предложение было переведено в Stage-1. <тут можно рассказать про babel>
+РќР° РїРѕСЃР»РµРґРЅРµР№ 59-Р№ РІСЃС‚СЂРµС‡Рµ СЂР°Р±РѕС‡РµР№ РіСЂСѓРїРїС‹ Ecma TC39 СЌС‚Рѕ РїСЂРµРґР»РѕР¶РµРЅРёРµ Р±С‹Р»Рѕ РїРµСЂРµРІРµРґРµРЅРѕ РІ Stage-1. <С‚СѓС‚ РјРѕР¶РЅРѕ СЂР°СЃСЃРєР°Р·Р°С‚СЊ РїСЂРѕ babel>
 
-Чем это предложение может быть полезно для нас?
+Р§РµРј СЌС‚Рѕ РїСЂРµРґР»РѕР¶РµРЅРёРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїРѕР»РµР·РЅРѕ РґР»СЏ РЅР°СЃ?
 
-<тут можно рассказать о проблеме, что flowtype, eslint, jest и так далее все парсят сами>
+<С‚СѓС‚ РјРѕР¶РЅРѕ СЂР°СЃСЃРєР°Р·Р°С‚СЊ Рѕ РїСЂРѕР±Р»РµРјРµ, С‡С‚Рѕ flowtype, eslint, jest Рё С‚Р°Рє РґР°Р»РµРµ РІСЃРµ РїР°СЂСЃСЏС‚ СЃР°РјРё>
 
 
-Мотивация
+РњРѕС‚РёРІР°С†РёСЏ
 
-Производительность веб-приложений всё больше упирается в бутылочное горлышко медленного старта (загрузки). Веб-ресурсы содержат и отправляют по проводам всё больше JS-кода. Кеширование помогает, конечно, но на ресурсы регулярно выкатывается новый код, так что время холодной загрузки очень важно.
+РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ РІРµР±-РїСЂРёР»РѕР¶РµРЅРёР№ РІСЃС‘ Р±РѕР»СЊС€Рµ СѓРїРёСЂР°РµС‚СЃСЏ РІ Р±СѓС‚С‹Р»РѕС‡РЅРѕРµ РіРѕСЂР»С‹С€РєРѕ РјРµРґР»РµРЅРЅРѕРіРѕ СЃС‚Р°СЂС‚Р° (Р·Р°РіСЂСѓР·РєРё). Р’РµР±-СЂРµСЃСѓСЂСЃС‹ СЃРѕРґРµСЂР¶Р°С‚ Рё РѕС‚РїСЂР°РІР»СЏСЋС‚ РїРѕ РїСЂРѕРІРѕРґР°Рј РІСЃС‘ Р±РѕР»СЊС€Рµ JS-РєРѕРґР°. РљРµС€РёСЂРѕРІР°РЅРёРµ РїРѕРјРѕРіР°РµС‚, РєРѕРЅРµС‡РЅРѕ, РЅРѕ РЅР° СЂРµСЃСѓСЂСЃС‹ СЂРµРіСѓР»СЏСЂРЅРѕ РІС‹РєР°С‚С‹РІР°РµС‚СЃСЏ РЅРѕРІС‹Р№ РєРѕРґ, С‚Р°Рє С‡С‚Рѕ РІСЂРµРјСЏ С…РѕР»РѕРґРЅРѕР№ Р·Р°РіСЂСѓР·РєРё РѕС‡РµРЅСЊ РІР°Р¶РЅРѕ.
 
 Performance of applications on the web platform is becoming increasingly bottlenecked by startup (load) time. Larger amounts of JS code are transferred over the wire by more sophisticated web properties. While caching helps, these properties regularly release new code, and cold load times are very important.
 
-Рассмотрим кратко несжатый размер javascript-кода для некоторых популярных приложений на июль 2017, десктопные и мобильные отдельно:
+Р Р°СЃСЃРјРѕС‚СЂРёРј РєСЂР°С‚РєРѕ РЅРµСЃР¶Р°С‚С‹Р№ СЂР°Р·РјРµСЂ javascript-РєРѕРґР° РґР»СЏ РЅРµРєРѕС‚РѕСЂС‹С… РїРѕРїСѓР»СЏСЂРЅС‹С… РїСЂРёР»РѕР¶РµРЅРёР№ РЅР° РёСЋР»СЊ 2017, РґРµСЃРєС‚РѕРїРЅС‹Рµ Рё РјРѕР±РёР»СЊРЅС‹Рµ РѕС‚РґРµР»СЊРЅРѕ:
 
 A brief survey from July 2017 of the uncompressed JS payload sizes for some popular web applications on desktop and mobile:
 
@@ -32,45 +32,45 @@ Twitter	1.8 MB
 Facebook	1.8 MB
 Reddit	1.3 MB
 
-Время старта уменьшается с ростом объёма доставляемого кода, даже если запускается только часть этого кода. И значительный вклад в это время делает парсинг кода, требуя больше ресурсов центрального процессора, чем генерация байткода или начальная JIT-компиляция. Например во время загрузки сайта facebook.com на производительном ноутбуке Chrome тратит от 10% до 15% времени ЦПУ на парсинг JS-кода.
+Р’СЂРµРјСЏ СЃС‚Р°СЂС‚Р° СѓРјРµРЅСЊС€Р°РµС‚СЃСЏ СЃ СЂРѕСЃС‚РѕРј РѕР±СЉС‘РјР° РґРѕСЃС‚Р°РІР»СЏРµРјРѕРіРѕ РєРѕРґР°, РґР°Р¶Рµ РµСЃР»Рё Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С‡Р°СЃС‚СЊ СЌС‚РѕРіРѕ РєРѕРґР°. Р Р·РЅР°С‡РёС‚РµР»СЊРЅС‹Р№ РІРєР»Р°Рґ РІ СЌС‚Рѕ РІСЂРµРјСЏ РґРµР»Р°РµС‚ РїР°СЂСЃРёРЅРі РєРѕРґР°, С‚СЂРµР±СѓСЏ Р±РѕР»СЊС€Рµ СЂРµСЃСѓСЂСЃРѕРІ С†РµРЅС‚СЂР°Р»СЊРЅРѕРіРѕ РїСЂРѕС†РµСЃСЃРѕСЂР°, С‡РµРј РіРµРЅРµСЂР°С†РёСЏ Р±Р°Р№С‚РєРѕРґР° РёР»Рё РЅР°С‡Р°Р»СЊРЅР°СЏ JIT-РєРѕРјРїРёР»СЏС†РёСЏ. РќР°РїСЂРёРјРµСЂ РІРѕ РІСЂРµРјСЏ Р·Р°РіСЂСѓР·РєРё СЃР°Р№С‚Р° facebook.com РЅР° РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕРј РЅРѕСѓС‚Р±СѓРєРµ Chrome С‚СЂР°С‚РёС‚ РѕС‚ 10% РґРѕ 15% РІСЂРµРјРµРЅРё Р¦РџРЈ РЅР° РїР°СЂСЃРёРЅРі JS-РєРѕРґР°.
 
 Startup performance degrades with larger JS payloads, even if only a fraction of the code is actually executed. Parsing time is a significant component, taking more CPU time than bytecode / initial JIT code generation. For example, on a powerful laptop, Chrome spends 10% to 15% of CPU time parsing JS while loading facebook.com.
 
-Мы предлагаем новый формат JS-кода для сети: абстрактное синтактическое дерево в бинарном виде. Мы верим, что этот новый формат позволит кардинально ускорить парсинг кода. Более того, сообщество разработчиков уже сейчас имеет широкие возможности для перехода на новый формат благодаря использованию инструментов сборки.
+РњС‹ РїСЂРµРґР»Р°РіР°РµРј РЅРѕРІС‹Р№ С„РѕСЂРјР°С‚ JS-РєРѕРґР° РґР»СЏ СЃРµС‚Рё: Р°Р±СЃС‚СЂР°РєС‚РЅРѕРµ СЃРёРЅС‚Р°РєС‚РёС‡РµСЃРєРѕРµ РґРµСЂРµРІРѕ РІ Р±РёРЅР°СЂРЅРѕРј РІРёРґРµ. РњС‹ РІРµСЂРёРј, С‡С‚Рѕ СЌС‚РѕС‚ РЅРѕРІС‹Р№ С„РѕСЂРјР°С‚ РїРѕР·РІРѕР»РёС‚ РєР°СЂРґРёРЅР°Р»СЊРЅРѕ СѓСЃРєРѕСЂРёС‚СЊ РїР°СЂСЃРёРЅРі РєРѕРґР°. Р‘РѕР»РµРµ С‚РѕРіРѕ, СЃРѕРѕР±С‰РµСЃС‚РІРѕ СЂР°Р·СЂР°Р±РѕС‚С‡РёРєРѕРІ СѓР¶Рµ СЃРµР№С‡Р°СЃ РёРјРµРµС‚ С€РёСЂРѕРєРёРµ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РґР»СЏ РїРµСЂРµС…РѕРґР° РЅР° РЅРѕРІС‹Р№ С„РѕСЂРјР°С‚ Р±Р»Р°РіРѕРґР°СЂСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЋ РёРЅСЃС‚СЂСѓРјРµРЅС‚РѕРІ СЃР±РѕСЂРєРё.
 
 We propose a new over-the-wire format for JS that is a binary encoding of an AST. We believe this new format would allow for drastically faster parsing. Moreover, web developers are well positioned to adopt a new format as they have embraced build tooling.
 
-Мы также сделали прототип, который показывает обнадёживающее ускорение прозводительности без увеличения объёма результирующего файла.
+РњС‹ С‚Р°РєР¶Рµ СЃРґРµР»Р°Р»Рё РїСЂРѕС‚РѕС‚РёРї, РєРѕС‚РѕСЂС‹Р№ РїРѕРєР°Р·С‹РІР°РµС‚ РѕР±РЅР°РґС‘Р¶РёРІР°СЋС‰РµРµ СѓСЃРєРѕСЂРµРЅРёРµ РїСЂРѕР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё Р±РµР· СѓРІРµР»РёС‡РµРЅРёСЏ РѕР±СЉС‘РјР° СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµРіРѕ С„Р°Р№Р»Р°.
 
 We have also implemented a prototype encoder and decoder that demonstrates encouraging performance improvements without bloating file size.
 
-Проектирование (Design Philosophy)
+РџСЂРѕРµРєС‚РёСЂРѕРІР°РЅРёРµ (Design Philosophy)
 
-Ключевые положения должны быть консервативными, чтобы быть реалистичными как в реализации, так и в комитете. Суть текущего предложения - просто альтернативное представление существующего синтаксиса ECMAScript с минимального возможными отличиями, при этом позволяющее увеличить производительность парсинга. По своей природе это предложение не пытается делать обработку на уровне семантики (например байткод, использование переменных вместо идентификаторов).
+РљР»СЋС‡РµРІС‹Рµ РїРѕР»РѕР¶РµРЅРёСЏ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹РјРё, С‡С‚РѕР±С‹ Р±С‹С‚СЊ СЂРµР°Р»РёСЃС‚РёС‡РЅС‹РјРё РєР°Рє РІ СЂРµР°Р»РёР·Р°С†РёРё, С‚Р°Рє Рё РІ РєРѕРјРёС‚РµС‚Рµ. РЎСѓС‚СЊ С‚РµРєСѓС‰РµРіРѕ РїСЂРµРґР»РѕР¶РµРЅРёСЏ - РїСЂРѕСЃС‚Рѕ Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ СЃРёРЅС‚Р°РєСЃРёСЃР° ECMAScript СЃ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РІРѕР·РјРѕР¶РЅС‹РјРё РѕС‚Р»РёС‡РёСЏРјРё, РїСЂРё СЌС‚РѕРј РїРѕР·РІРѕР»СЏСЋС‰РµРµ СѓРІРµР»РёС‡РёС‚СЊ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ РїР°СЂСЃРёРЅРіР°. РџРѕ СЃРІРѕРµР№ РїСЂРёСЂРѕРґРµ СЌС‚Рѕ РїСЂРµРґР»РѕР¶РµРЅРёРµ РЅРµ РїС‹С‚Р°РµС‚СЃСЏ РґРµР»Р°С‚СЊ РѕР±СЂР°Р±РѕС‚РєСѓ РЅР° СѓСЂРѕРІРЅРµ СЃРµРјР°РЅС‚РёРєРё (РЅР°РїСЂРёРјРµСЂ Р±Р°Р№С‚РєРѕРґ, РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… РІРјРµСЃС‚Рѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ).
 
 The overriding design philosophy is to be conservative, so as to be realistic both in implementation and committee. This proposal is intended to be simply an alternative encoding of the surface syntax with the smallest possible delta to enable high performance parsing. By design, this proposal does not attempt any semantics-level encoding (e.g., bytecode, encoding variables instead of identifiers).
 
-Учитывая вышесказанное, это предложение очень амбициозное.
+РЈС‡РёС‚С‹РІР°СЏ РІС‹С€РµСЃРєР°Р·Р°РЅРЅРѕРµ, СЌС‚Рѕ РїСЂРµРґР»РѕР¶РµРЅРёРµ РѕС‡РµРЅСЊ Р°РјР±РёС†РёРѕР·РЅРѕРµ.
 
 That said, this proposal is highly ambitious.
 
-Список узких мест парсинга
+РЎРїРёСЃРѕРє СѓР·РєРёС… РјРµСЃС‚ РїР°СЂСЃРёРЅРіР°
 
 Current Parsing Bottlenecks
 
-1. Информация недоступна там, где нужна
+1. РРЅС„РѕСЂРјР°С†РёСЏ РЅРµРґРѕСЃС‚СѓРїРЅР° С‚Р°Рј, РіРґРµ РЅСѓР¶РЅР°
 
 1. Information Not Available Where Needed
 
-Фундаментальная проблема, замедляющая парсинг JS-кода - это частое отсутствие информации во время компиляции в том месте входного потока, где сейчас парсер. Такое бывает, когда парсеру требуется информация из кода, к обработке которого он либо ещё не приступил (например всплытие переменных), либо не приступит (например внутренние функции).
+Р¤СѓРЅРґР°РјРµРЅС‚Р°Р»СЊРЅР°СЏ РїСЂРѕР±Р»РµРјР°, Р·Р°РјРµРґР»СЏСЋС‰Р°СЏ РїР°СЂСЃРёРЅРі JS-РєРѕРґР° - СЌС‚Рѕ С‡Р°СЃС‚РѕРµ РѕС‚СЃСѓС‚СЃС‚РІРёРµ РёРЅС„РѕСЂРјР°С†РёРё РІРѕ РІСЂРµРјСЏ РєРѕРјРїРёР»СЏС†РёРё РІ С‚РѕРј РјРµСЃС‚Рµ РІС…РѕРґРЅРѕРіРѕ РїРѕС‚РѕРєР°, РіРґРµ СЃРµР№С‡Р°СЃ РїР°СЂСЃРµСЂ. РўР°РєРѕРµ Р±С‹РІР°РµС‚, РєРѕРіРґР° РїР°СЂСЃРµСЂСѓ С‚СЂРµР±СѓРµС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РёР· РєРѕРґР°, Рє РѕР±СЂР°Р±РѕС‚РєРµ РєРѕС‚РѕСЂРѕРіРѕ РѕРЅ Р»РёР±Рѕ РµС‰С‘ РЅРµ РїСЂРёСЃС‚СѓРїРёР» (РЅР°РїСЂРёРјРµСЂ РІСЃРїР»С‹С‚РёРµ РїРµСЂРµРјРµРЅРЅС‹С…), Р»РёР±Рѕ РЅРµ РїСЂРёСЃС‚СѓРїРёС‚ (РЅР°РїСЂРёРјРµСЂ РІРЅСѓС‚СЂРµРЅРЅРёРµ С„СѓРЅРєС†РёРё).
 
 One fundamental issue making parsing slow is that information needed to make decisions during parsing is oftentimes not yet available at the point in the input stream at which it is needed. This happens when the parser needs information from code it either hasn't parsed yet (like variable hoisting) or code it doesn't want to parse (like inner functions).
 
-Конкретный пример - это проблема эффективной обработки биндингов. Чтобы принять решение, как представлять или размещать переменную, парсер должен знать, где переменная используется, поэтому становится необходимым распарсить все вложенные функции. Спецификация определяет только откуда декларация переменной `var x` будет доступна, но не как её разместить - информация не зашита ни вместе с декларацией переменной, ни в точке, где требуется выделение.
+РљРѕРЅРєСЂРµС‚РЅС‹Р№ РїСЂРёРјРµСЂ - СЌС‚Рѕ РїСЂРѕР±Р»РµРјР° СЌС„С„РµРєС‚РёРІРЅРѕР№ РѕР±СЂР°Р±РѕС‚РєРё Р±РёРЅРґРёРЅРіРѕРІ. Р§С‚РѕР±С‹ РїСЂРёРЅСЏС‚СЊ СЂРµС€РµРЅРёРµ, РєР°Рє РїСЂРµРґСЃС‚Р°РІР»СЏС‚СЊ РёР»Рё СЂР°Р·РјРµС‰Р°С‚СЊ РїРµСЂРµРјРµРЅРЅСѓСЋ, РїР°СЂСЃРµСЂ РґРѕР»Р¶РµРЅ Р·РЅР°С‚СЊ, РіРґРµ РїРµСЂРµРјРµРЅРЅР°СЏ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, РїРѕСЌС‚РѕРјСѓ СЃС‚Р°РЅРѕРІРёС‚СЃСЏ РЅРµРѕР±С…РѕРґРёРјС‹Рј СЂР°СЃРїР°СЂСЃРёС‚СЊ РІСЃРµ РІР»РѕР¶РµРЅРЅС‹Рµ С„СѓРЅРєС†РёРё. РЎРїРµС†РёС„РёРєР°С†РёСЏ РѕРїСЂРµРґРµР»СЏРµС‚ С‚РѕР»СЊРєРѕ РѕС‚РєСѓРґР° РґРµРєР»Р°СЂР°С†РёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ `var x` Р±СѓРґРµС‚ РґРѕСЃС‚СѓРїРЅР°, РЅРѕ РЅРµ РєР°Рє РµС‘ СЂР°Р·РјРµСЃС‚РёС‚СЊ - РёРЅС„РѕСЂРјР°С†РёСЏ РЅРµ Р·Р°С€РёС‚Р° РЅРё РІРјРµСЃС‚Рµ СЃ РґРµРєР»Р°СЂР°С†РёРµР№ РїРµСЂРµРјРµРЅРЅРѕР№, РЅРё РІ С‚РѕС‡РєРµ, РіРґРµ С‚СЂРµР±СѓРµС‚СЃСЏ РІС‹РґРµР»РµРЅРёРµ.
 
 One concrete example is the problem of efficiently representing bindings. In order to make decisions about how to represent or allocate a variable, the parser needs to know whether the variable is closed over, so it becomes necessary to parse any nested functions. The specification only states where a declaration like var x needs to be reachable, not how to allocate it -- the information needed for the allocation decision is not encoded where the variable is declared, nor at the spot where it needs to be allocated.
 
-В следующем примере из-за всплытия функция `use_x` замыкает переменную `x`, хотя её декларации ещё не было на момент парсинга внутренней функции. Движок не может сгенерировать оптимальный доступ к x внутри use_x до тех пор, пока не обработает всю функцию `f`.
+Р’ СЃР»РµРґСѓСЋС‰РµРј РїСЂРёРјРµСЂРµ РёР·-Р·Р° РІСЃРїР»С‹С‚РёСЏ С„СѓРЅРєС†РёСЏ `use_x` Р·Р°РјС‹РєР°РµС‚ РїРµСЂРµРјРµРЅРЅСѓСЋ `x`, С…РѕС‚СЏ РµС‘ РґРµРєР»Р°СЂР°С†РёРё РµС‰С‘ РЅРµ Р±С‹Р»Рѕ РЅР° РјРѕРјРµРЅС‚ РїР°СЂСЃРёРЅРіР° РІРЅСѓС‚СЂРµРЅРЅРµР№ С„СѓРЅРєС†РёРё. Р”РІРёР¶РѕРє РЅРµ РјРѕР¶РµС‚ СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РѕРїС‚РёРјР°Р»СЊРЅС‹Р№ РґРѕСЃС‚СѓРї Рє x РІРЅСѓС‚СЂРё use_x РґРѕ С‚РµС… РїРѕСЂ, РїРѕРєР° РЅРµ РѕР±СЂР°Р±РѕС‚Р°РµС‚ РІСЃСЋ С„СѓРЅРєС†РёСЋ `f`.
 
 In the following example, due to variable hoisting, use_x closes over x, which is not known to be declared in f at the point of parsing the inner function. An engine cannot emit optimized accesses to x inside use_x until the entirety of f is parsed.
 
@@ -83,18 +83,18 @@ function f() {
   var x;
 }
 
-В следующем примере движку необходимо знать, как выделять память для переменных в момент, когда они обрабатываются. Это невозможно
+Р’ СЃР»РµРґСѓСЋС‰РµРј РїСЂРёРјРµСЂРµ РґРІРёР¶РєСѓ РЅРµРѕР±С…РѕРґРёРјРѕ Р·РЅР°С‚СЊ, РєР°Рє РІС‹РґРµР»СЏС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ РїРµСЂРµРјРµРЅРЅС‹С… РІ РјРѕРјРµРЅС‚, РєРѕРіРґР° РѕРЅРё РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ. Р­С‚Рѕ РЅРµРІРѕР·РјРѕР¶РЅРѕ
 
 In the following example, an engine's frontend would like to know how to efficiently allocate space for the var declarations as they are parsed. That is not possible without parsing the rest of the function.
 
 function g() {
-  var x; // Не замкнута, идёт в function frame.
-  var y; // Замкнута, идёт в объект активации
+  var x; // РќРµ Р·Р°РјРєРЅСѓС‚Р°, РёРґС‘С‚ РІ function frame.
+  var y; // Р—Р°РјРєРЅСѓС‚Р°, РёРґС‘С‚ РІ РѕР±СЉРµРєС‚ Р°РєС‚РёРІР°С†РёРё
 
   return (function() { use(y); });
 }
 
-В следующем примере, наличие eval в конце функции неизвестно на момент, когда движок решает, будет ли var x доступна динамически.
+Р’ СЃР»РµРґСѓСЋС‰РµРј РїСЂРёРјРµСЂРµ, РЅР°Р»РёС‡РёРµ eval РІ РєРѕРЅС†Рµ С„СѓРЅРєС†РёРё РЅРµРёР·РІРµСЃС‚РЅРѕ РЅР° РјРѕРјРµРЅС‚, РєРѕРіРґР° РґРІРёР¶РѕРє СЂРµС€Р°РµС‚, Р±СѓРґРµС‚ Р»Рё var x РґРѕСЃС‚СѓРїРЅР° РґРёРЅР°РјРёС‡РµСЃРєРё.
 
 In the following example, the presence of eval at the bottom of the function is unknown at the time when the engine needs to decide if var x may be accessed dynamically.
 
@@ -107,17 +107,17 @@ function h(input) {
 }
 
 
-2. Семантика ранних ошибок
+2. РЎРµРјР°РЅС‚РёРєР° СЂР°РЅРЅРёС… РѕС€РёР±РѕРє
 
 2. Early Error Semantics
 
-* ранние ошибки: http://www.ecma-international.org/ecma-262/5.1/#sec-16
+* СЂР°РЅРЅРёРµ РѕС€РёР±РєРё: http://www.ecma-international.org/ecma-262/5.1/#sec-16
 
-Для ранних ошибок в JavaScript необходим парсинг всей совокупности файлов. Движки используют для этого ленивый парсинг (также известный как пре-парсинг), во время которого не строится полное AST: начальная кодогенерация для внутренних функций откладывается до первого вызова. В среднем это ускоряет парсинг на 50%, но затрачиваемое время по-прежнему пропорционально размеру файла. Что ещё хуже, эта оптимизация может выйти боком. Если внутренняя функция, кодогенерация которой была отменена, вызывается во время старта приложения, движок парсит полностью всю функцию. Это случается достаточно часто, т.к. в разработке принято прибегать к использованию самовызывающихся функций, что полностью нивелирует ленивый парсинг.
+Р”Р»СЏ СЂР°РЅРЅРёС… РѕС€РёР±РѕРє РІ JavaScript РЅРµРѕР±С…РѕРґРёРј РїР°СЂСЃРёРЅРі РІСЃРµР№ СЃРѕРІРѕРєСѓРїРЅРѕСЃС‚Рё С„Р°Р№Р»РѕРІ. Р”РІРёР¶РєРё РёСЃРїРѕР»СЊР·СѓСЋС‚ РґР»СЏ СЌС‚РѕРіРѕ Р»РµРЅРёРІС‹Р№ РїР°СЂСЃРёРЅРі (С‚Р°РєР¶Рµ РёР·РІРµСЃС‚РЅС‹Р№ РєР°Рє РїСЂРµ-РїР°СЂСЃРёРЅРі), РІРѕ РІСЂРµРјСЏ РєРѕС‚РѕСЂРѕРіРѕ РЅРµ СЃС‚СЂРѕРёС‚СЃСЏ РїРѕР»РЅРѕРµ AST: РЅР°С‡Р°Р»СЊРЅР°СЏ РєРѕРґРѕРіРµРЅРµСЂР°С†РёСЏ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРёС… С„СѓРЅРєС†РёР№ РѕС‚РєР»Р°РґС‹РІР°РµС‚СЃСЏ РґРѕ РїРµСЂРІРѕРіРѕ РІС‹Р·РѕРІР°. Р’ СЃСЂРµРґРЅРµРј СЌС‚Рѕ СѓСЃРєРѕСЂСЏРµС‚ РїР°СЂСЃРёРЅРі РЅР° 50%, РЅРѕ Р·Р°С‚СЂР°С‡РёРІР°РµРјРѕРµ РІСЂРµРјСЏ РїРѕ-РїСЂРµР¶РЅРµРјСѓ РїСЂРѕРїРѕСЂС†РёРѕРЅР°Р»СЊРЅРѕ СЂР°Р·РјРµСЂСѓ С„Р°Р№Р»Р°. Р§С‚Рѕ РµС‰С‘ С…СѓР¶Рµ, СЌС‚Р° РѕРїС‚РёРјРёР·Р°С†РёСЏ РјРѕР¶РµС‚ РІС‹Р№С‚Рё Р±РѕРєРѕРј. Р•СЃР»Рё РІРЅСѓС‚СЂРµРЅРЅСЏСЏ С„СѓРЅРєС†РёСЏ, РєРѕРґРѕРіРµРЅРµСЂР°С†РёСЏ РєРѕС‚РѕСЂРѕР№ Р±С‹Р»Р° РѕС‚РјРµРЅРµРЅР°, РІС‹Р·С‹РІР°РµС‚СЃСЏ РІРѕ РІСЂРµРјСЏ СЃС‚Р°СЂС‚Р° РїСЂРёР»РѕР¶РµРЅРёСЏ, РґРІРёР¶РѕРє РїР°СЂСЃРёС‚ РїРѕР»РЅРѕСЃС‚СЊСЋ РІСЃСЋ С„СѓРЅРєС†РёСЋ. Р­С‚Рѕ СЃР»СѓС‡Р°РµС‚СЃСЏ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ С‡Р°СЃС‚Рѕ, С‚.Рє. РІ СЂР°Р·СЂР°Р±РѕС‚РєРµ РїСЂРёРЅСЏС‚Рѕ РїСЂРёР±РµРіР°С‚СЊ Рє РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЋ СЃР°РјРѕРІС‹Р·С‹РІР°СЋС‰РёС…СЃСЏ С„СѓРЅРєС†РёР№, С‡С‚Рѕ РїРѕР»РЅРѕСЃС‚СЊСЋ РЅРёРІРµР»РёСЂСѓРµС‚ Р»РµРЅРёРІС‹Р№ РїР°СЂСЃРёРЅРі.
 
-JavaScript’s early error semantics requires the entirety of every file be parsed. Engines employ a lazy parsing (also known as pre-parsing) optimization that avoids building a full AST by skipping initial code generation for inner functions until time of first invocation. This is only 50% faster on average, and parsing effort is still proportional to file size. What's worse, this optimization can backfire. If an inner function whose code generation was skipped happens to be called during application startup, then the engine must in effect re-parse the entire function. This happens often enough that developers have resorted to using immediately-invoked function expressions to altogether bypass lazy parsing.
+JavaScriptвЂ™s early error semantics requires the entirety of every file be parsed. Engines employ a lazy parsing (also known as pre-parsing) optimization that avoids building a full AST by skipping initial code generation for inner functions until time of first invocation. This is only 50% faster on average, and parsing effort is still proportional to file size. What's worse, this optimization can backfire. If an inner function whose code generation was skipped happens to be called during application startup, then the engine must in effect re-parse the entire function. This happens often enough that developers have resorted to using immediately-invoked function expressions to altogether bypass lazy parsing.
 
-Идём дальше. В нижележащем примере если innerWithSyntaxError имеет раннюю ошибку, внешняя функция тоже должна бросать раннюю ошибку.
+РРґС‘Рј РґР°Р»СЊС€Рµ. Р’ РЅРёР¶РµР»РµР¶Р°С‰РµРј РїСЂРёРјРµСЂРµ РµСЃР»Рё innerWithSyntaxError РёРјРµРµС‚ СЂР°РЅРЅСЋСЋ РѕС€РёР±РєСѓ, РІРЅРµС€РЅСЏСЏ С„СѓРЅРєС†РёСЏ С‚РѕР¶Рµ РґРѕР»Р¶РЅР° Р±СЂРѕСЃР°С‚СЊ СЂР°РЅРЅСЋСЋ РѕС€РёР±РєСѓ.
 
 Consider the following. Currently, since innerWithSyntaxError has an early error, outer also must throw the early error.
 
@@ -127,7 +127,7 @@ function outer() {
   }
 }
 
-Предлагаемое изменение поведения аналогично обёртыванию тела функции в eval, как тут:
+РџСЂРµРґР»Р°РіР°РµРјРѕРµ РёР·РјРµРЅРµРЅРёРµ РїРѕРІРµРґРµРЅРёСЏ Р°РЅР°Р»РѕРіРёС‡РЅРѕ РѕР±С‘СЂС‚С‹РІР°РЅРёСЋ С‚РµР»Р° С„СѓРЅРєС†РёРё РІ eval, РєР°Рє С‚СѓС‚:
 
 The proposed behavior change is analogous to wrapping function bodies with eval, as below.
 
@@ -138,29 +138,29 @@ function outer() {
 }
 
 
-3. Недостатки использования символов (шта?)
+3. РќРµРґРѕСЃС‚Р°С‚РєРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ СЃРёРјРІРѕР»РѕРІ (С€С‚Р°?)
 
 3. Inefficiencies in Using Characters
 
-Во время парсинга может быть двусмысленность на уровне символов (токенов?), связанная с тем, какой тип выражения текущий синтакс содержит. Например, для различения списка выражений от списка параметров стрелочной функции, парсерам необходимо дополнительно принять во внимание все возможные интерпретации, пока двусмысленность не будет убрана, или им необходимо хранить возможность о предыдущих правилах.
+Р’Рѕ РІСЂРµРјСЏ РїР°СЂСЃРёРЅРіР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РґРІСѓСЃРјС‹СЃР»РµРЅРЅРѕСЃС‚СЊ РЅР° СѓСЂРѕРІРЅРµ СЃРёРјРІРѕР»РѕРІ (С‚РѕРєРµРЅРѕРІ?), СЃРІСЏР·Р°РЅРЅР°СЏ СЃ С‚РµРј, РєР°РєРѕР№ С‚РёРї РІС‹СЂР°Р¶РµРЅРёСЏ С‚РµРєСѓС‰РёР№ СЃРёРЅС‚Р°РєСЃ СЃРѕРґРµСЂР¶РёС‚. РќР°РїСЂРёРјРµСЂ, РґР»СЏ СЂР°Р·Р»РёС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІС‹СЂР°Р¶РµРЅРёР№ РѕС‚ СЃРїРёСЃРєР° РїР°СЂР°РјРµС‚СЂРѕРІ СЃС‚СЂРµР»РѕС‡РЅРѕР№ С„СѓРЅРєС†РёРё, РїР°СЂСЃРµСЂР°Рј РЅРµРѕР±С…РѕРґРёРјРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРёРЅСЏС‚СЊ РІРѕ РІРЅРёРјР°РЅРёРµ РІСЃРµ РІРѕР·РјРѕР¶РЅС‹Рµ РёРЅС‚РµСЂРїСЂРµС‚Р°С†РёРё, РїРѕРєР° РґРІСѓСЃРјС‹СЃР»РµРЅРЅРѕСЃС‚СЊ РЅРµ Р±СѓРґРµС‚ СѓР±СЂР°РЅР°, РёР»Рё РёРј РЅРµРѕР±С…РѕРґРёРјРѕ С…СЂР°РЅРёС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ Рѕ РїСЂРµРґС‹РґСѓС‰РёС… РїСЂР°РІРёР»Р°С….
 
 When parsing, there can be ambiguity at the character-level about what type of expression a JavaScript syntax is encoding. For example, to distinguish between list expressions and the parameter list for an arrow function, parsers need to do additional bookkeeping to account for all valid interpretations until the ambiguity is resolved, or they need to have the ability to backtrack while parsing.
 
-С другой стороны, лексический разбор медленный из-за необходимости поддержки Юникода и экранированных символов. Движкам необходимо проверять, является ли кодировка конкретного текста однобайтовой или двухбайтовой.
+РЎ РґСЂСѓРіРѕР№ СЃС‚РѕСЂРѕРЅС‹, Р»РµРєСЃРёС‡РµСЃРєРёР№ СЂР°Р·Р±РѕСЂ РјРµРґР»РµРЅРЅС‹Р№ РёР·-Р·Р° РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїРѕРґРґРµСЂР¶РєРё Р®РЅРёРєРѕРґР° Рё СЌРєСЂР°РЅРёСЂРѕРІР°РЅРЅС‹С… СЃРёРјРІРѕР»РѕРІ. Р”РІРёР¶РєР°Рј РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, СЏРІР»СЏРµС‚СЃСЏ Р»Рё РєРѕРґРёСЂРѕРІРєР° РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ С‚РµРєСЃС‚Р° РѕРґРЅРѕР±Р°Р№С‚РѕРІРѕР№ РёР»Рё РґРІСѓС…Р±Р°Р№С‚РѕРІРѕР№.
 
 Similarly, lexing is slow due to reasons such as Unicode encoding and having to handle Unicode escape codes. Engines need to check if some text is single-byte or double-byte encoded, for instance.
 
-Предложение
+РџСЂРµРґР»РѕР¶РµРЅРёРµ
 
 Proposal
 
-Мы предлагаем бинарную кодировку, основанную на абстрактном синтаксическом дереве, представляющем синтакс JavaScript. Это новая, альтернативная кодировка исходного синтаксиса с удивительно простым обратимым преобразованием в текстовое представление. Мы ищем как сделать минимум изменений для новой семантики, которая сейчас ограничена следующими вещами:
+РњС‹ РїСЂРµРґР»Р°РіР°РµРј Р±РёРЅР°СЂРЅСѓСЋ РєРѕРґРёСЂРѕРІРєСѓ, РѕСЃРЅРѕРІР°РЅРЅСѓСЋ РЅР° Р°Р±СЃС‚СЂР°РєС‚РЅРѕРј СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРј РґРµСЂРµРІРµ, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РµРј СЃРёРЅС‚Р°РєСЃ JavaScript. Р­С‚Рѕ РЅРѕРІР°СЏ, Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅР°СЏ РєРѕРґРёСЂРѕРІРєР° РёСЃС…РѕРґРЅРѕРіРѕ СЃРёРЅС‚Р°РєСЃРёСЃР° СЃ СѓРґРёРІРёС‚РµР»СЊРЅРѕ РїСЂРѕСЃС‚С‹Рј РѕР±СЂР°С‚РёРјС‹Рј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµРј РІ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ. РњС‹ РёС‰РµРј РєР°Рє СЃРґРµР»Р°С‚СЊ РјРёРЅРёРјСѓРј РёР·РјРµРЅРµРЅРёР№ РґР»СЏ РЅРѕРІРѕР№ СЃРµРјР°РЅС‚РёРєРё, РєРѕС‚РѕСЂР°СЏ СЃРµР№С‡Р°СЃ РѕРіСЂР°РЅРёС‡РµРЅР° СЃР»РµРґСѓСЋС‰РёРјРё РІРµС‰Р°РјРё:
 
-- отложенными ранними ошибками
-- изменениями в поведении Function.prototype.toString
-- поддержкой UTF-8
+- РѕС‚Р»РѕР¶РµРЅРЅС‹РјРё СЂР°РЅРЅРёРјРё РѕС€РёР±РєР°РјРё
+- РёР·РјРµРЅРµРЅРёСЏРјРё РІ РїРѕРІРµРґРµРЅРёРё Function.prototype.toString
+- РїРѕРґРґРµСЂР¶РєРѕР№ UTF-8
 
-Для будущего ускорения парсинга мы предлагаем кодировать статическую семантику как подсказки реализации и проверять их отложенно.
+Р”Р»СЏ Р±СѓРґСѓС‰РµРіРѕ СѓСЃРєРѕСЂРµРЅРёСЏ РїР°СЂСЃРёРЅРіР° РјС‹ РїСЂРµРґР»Р°РіР°РµРј РєРѕРґРёСЂРѕРІР°С‚СЊ СЃС‚Р°С‚РёС‡РµСЃРєСѓСЋ СЃРµРјР°РЅС‚РёРєСѓ РєР°Рє РїРѕРґСЃРєР°Р·РєРё СЂРµР°Р»РёР·Р°С†РёРё Рё РїСЂРѕРІРµСЂСЏС‚СЊ РёС… РѕС‚Р»РѕР¶РµРЅРЅРѕ.
 
 We propose a binary encoding based on an efficient abstract syntax tree representation of JavaScript syntax. This is a new, alternate encoding of the surface syntax, with a fairly close bidirectional mapping to the text representation. We seek to be as conservative as possible in introducing new semantics, which are currently limited to:
 
@@ -169,11 +169,11 @@ changing Function.prototype.toString behavior
 requiring UTF-8
 To further speed up parsing, we propose to encode static semantics as implementation hints, and verify them as deferred assertions.
 
-Для этого AST формата мы (пока) не предполагаем автоматическое построение из ECMA-262 грамматики, так как для представления в виде абстрактного дерева она содержит много лишнего, поэтому формат будет требовать множественные линеаризации потока управления (в оригинале просто "flattening") и инлайновые вставки [https://en.wikipedia.org/wiki/Inline_expansion] (в оригинале просто "inlining"). Как следствие, это может усложнить эволюцию JavaScript-спецификации из-за фактического превращения грамматики в спецификацию бинарного формата.
+Р”Р»СЏ СЌС‚РѕРіРѕ AST С„РѕСЂРјР°С‚Р° РјС‹ (РїРѕРєР°) РЅРµ РїСЂРµРґРїРѕР»Р°РіР°РµРј Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ РїРѕСЃС‚СЂРѕРµРЅРёРµ РёР· ECMA-262 РіСЂР°РјРјР°С‚РёРєРё, С‚Р°Рє РєР°Рє РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ РІРёРґРµ Р°Р±СЃС‚СЂР°РєС‚РЅРѕРіРѕ РґРµСЂРµРІР° РѕРЅР° СЃРѕРґРµСЂР¶РёС‚ РјРЅРѕРіРѕ Р»РёС€РЅРµРіРѕ, РїРѕСЌС‚РѕРјСѓ С„РѕСЂРјР°С‚ Р±СѓРґРµС‚ С‚СЂРµР±РѕРІР°С‚СЊ РјРЅРѕР¶РµСЃС‚РІРµРЅРЅС‹Рµ Р»РёРЅРµР°СЂРёР·Р°С†РёРё РїРѕС‚РѕРєР° СѓРїСЂР°РІР»РµРЅРёСЏ (РІ РѕСЂРёРіРёРЅР°Р»Рµ РїСЂРѕСЃС‚Рѕ "flattening") Рё РёРЅР»Р°Р№РЅРѕРІС‹Рµ РІСЃС‚Р°РІРєРё [https://en.wikipedia.org/wiki/Inline_expansion] (РІ РѕСЂРёРіРёРЅР°Р»Рµ РїСЂРѕСЃС‚Рѕ "inlining"). РљР°Рє СЃР»РµРґСЃС‚РІРёРµ, СЌС‚Рѕ РјРѕР¶РµС‚ СѓСЃР»РѕР¶РЅРёС‚СЊ СЌРІРѕР»СЋС†РёСЋ JavaScript-СЃРїРµС†РёС„РёРєР°С†РёРё РёР·-Р·Р° С„Р°РєС‚РёС‡РµСЃРєРѕРіРѕ РїСЂРµРІСЂР°С‰РµРЅРёСЏ РіСЂР°РјРјР°С‚РёРєРё РІ СЃРїРµС†РёС„РёРєР°С†РёСЋ Р±РёРЅР°СЂРЅРѕРіРѕ С„РѕСЂРјР°С‚Р°.
 
 For this AST format, we currently do not propose to automatically derive from the ECMA-262 grammar since it is too verbose to be an efficient tree representation, and as such it would require a lot of flattening and inlining. Additionally, this might restrict the evolution of the JavaScript specification by effectively making the grammar a normative specification of the binary format.
 
-Чтобы этого не произошло, мы предлагаем отдельную грамматику для представления дерева, в которой аннотации в вершинах АСД хранят информацию только о синтаксисе. В настоящий момент есть несколько подобных грамматик, от которых мы можем отталкиваться, например Babylon [https://github.com/babel/babylon] или Shift AST [http://shift-ast.org/].
+Р§С‚РѕР±С‹ СЌС‚РѕРіРѕ РЅРµ РїСЂРѕРёР·РѕС€Р»Рѕ, РјС‹ РїСЂРµРґР»Р°РіР°РµРј РѕС‚РґРµР»СЊРЅСѓСЋ РіСЂР°РјРјР°С‚РёРєСѓ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РґРµСЂРµРІР°, РІ РєРѕС‚РѕСЂРѕР№ Р°РЅРЅРѕС‚Р°С†РёРё РІ РІРµСЂС€РёРЅР°С… РђРЎР” С…СЂР°РЅСЏС‚ РёРЅС„РѕСЂРјР°С†РёСЋ С‚РѕР»СЊРєРѕ Рѕ СЃРёРЅС‚Р°РєСЃРёСЃРµ. Р’ РЅР°СЃС‚РѕСЏС‰РёР№ РјРѕРјРµРЅС‚ РµСЃС‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РїРѕРґРѕР±РЅС‹С… РіСЂР°РјРјР°С‚РёРє, РѕС‚ РєРѕС‚РѕСЂС‹С… РјС‹ РјРѕР¶РµРј РѕС‚С‚Р°Р»РєРёРІР°С‚СЊСЃСЏ, РЅР°РїСЂРёРјРµСЂ Babylon [https://github.com/babel/babylon] РёР»Рё Shift AST [http://shift-ast.org/].
 
 Instead, we propose a separate tree grammar, with annotations on AST nodes that only express information about the syntax. There are several existing tree grammars which we may take as a starting point, such as Babylon or Shift AST.
 
@@ -251,7 +251,7 @@ It is straightforward to layer additional improvements on this format in order t
 
 Prototype
 
-We implemented an early prototype in Mozilla’s SpiderMonkey engine, by using a grammar based on internal AST format. This was done for speed of implementation, and our next prototype will be based on the Babylon AST.
+We implemented an early prototype in MozillaвЂ™s SpiderMonkey engine, by using a grammar based on internal AST format. This was done for speed of implementation, and our next prototype will be based on the Babylon AST.
 
 For the facebook.com static newsfeed benchmark, the binary AST representation was slightly smaller than the original JavaScript. This held true even after both representations were passed through gzip for compression. The size reduction mainly came from the use of a string table and variable-length identifiers for entries in the table. It also used variable-length encodings for representing numbers. Additional size wins are possible by leveraging domain-specific information, such as factoring out common subtrees.
 
@@ -263,8 +263,8 @@ Why not ship bytecode instead?
 
 On the Web, no vendor would agree to ship bytecode.
 
-Engines don’t want to be tied to a bytecode version.
-It’s harder to verify bytecode, as bytecode is more expressive than syntax.
+Engines donвЂ™t want to be tied to a bytecode version.
+ItвЂ™s harder to verify bytecode, as bytecode is more expressive than syntax.
 It runs the risk of bifurcating the language, as bytecode may be more expressive than structured JavaScript source.
 Designing a new bytecode is an even more ambitious undertaking.
 Why not use WebAssembly?
